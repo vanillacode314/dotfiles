@@ -1,3 +1,8 @@
+export QT_AUTO_SCREEN_SET_FACTOR=0
+export QT_SCALE_FACTOR=1.25
+export QT_FONT_DPI=120
+export GDK_SCALE=.75
+export GDK_DPI_SCALE=1.25
 export EDITOR=/usr/bin/nvim
 export BROWSER=/usr/bin/brave
 export TERM=alacritty
@@ -5,7 +10,6 @@ export PATH=$PATH:$HOME/scripts:$HOME/go/bin:$HOME/Games/bin:/var/lib/flatpak/ex
 export PRETTIERD_DEFAULT_CONFIG="$HOME/.config/prettierd/.prettierrc"
 export BAT_THEME=gruvbox-dark
 export _JAVA_AWT_WM_NONREPARENTING=1
-export GDK_SCALE=1.5
 export JDK_JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dglass.gtk.uiScale=1.5 -Dsun.java2d.uiScale=1.5'
 export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk/"

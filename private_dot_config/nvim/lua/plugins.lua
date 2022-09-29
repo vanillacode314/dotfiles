@@ -1,77 +1,104 @@
 return require("packer").startup({
 	function(use)
-		-- Packer can manage itself
 		use("wbthomason/packer.nvim")
-
-		-- Colorschemes
+		use({ "lervag/vimtex" })
+		-- GIT
 		use({
-			"RRethy/nvim-base16",
-		})
-		use({
-			"Shatur/neovim-ayu",
+			"lewis6991/gitsigns.nvim",
+			-- tag = 'release' -- To use the latest release
 			config = function()
-				require("ayu").setup({
-					mirage = false, -- Set to `true` to use `mirage` variant instead of `dark` for dark background.
-					overrides = {}, -- A dictionary of group names, each associated with a dictionary of parameters (`bg`, `fg`, `sp` and `style`) and colors in hex.
-				})
+				require("gitsigns").setup()
 			end,
 		})
 
+		-- COLORSCHEMES
+		use("RRethy/nvim-base16")
+		use({
+			"Mofiqul/vscode.nvim",
+		})
+
+		-- LSP
 		use({
 			"neovim/nvim-lspconfig",
 			config = function()
-				require("lsp.config")
+				require("config.lsp")
 			end,
+		})
+
+		use("folke/lsp-colors.nvim")
+
+		use({
+			"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+			disable = true,
+			config = function()
+				require("lsp_lines").setup()
+			end,
+		})
+
+		use({
+			"onsails/lspkind-nvim",
 		})
 
 		use({
 			"jose-elias-alvarez/null-ls.nvim",
 			config = function()
-				require("null_config")
+				require("config.nullls")
 			end,
 			requires = {
 				"nvim-lua/plenary.nvim",
 			},
 		})
 
-		use({
-			"nvim-treesitter/playground",
-		})
+		-- TREESITTER
 		use({
 			"nvim-treesitter/nvim-treesitter",
 			run = ":TSUpdate",
+			config = function()
+				require("config.treesitter")
+			end,
+		})
+		use({
+			"virchau13/tree-sitter-astro",
+			ft = { "astro" },
+		})
+		use({
+			"nvim-treesitter/playground",
+			requires = {
+				"nvim-treesitter/nvim-treesitter",
+			},
 		})
 		use({
 			"nvim-treesitter/nvim-treesitter-textobjects",
+			requires = {
+				"nvim-treesitter/nvim-treesitter",
+			},
 		})
-
-		use({
-			"nvim-lualine/lualine.nvim",
-			requires = { "kyazdani42/nvim-web-devicons", opt = true },
-			config = function()
-				require("lualine_config")
-			end,
-		})
-
-		use({
-			"lukas-reineke/indent-blankline.nvim",
-		})
-
 		use({
 			"windwp/nvim-autopairs",
 			config = function()
-				require("nvim-autopairs").setup({})
+				require("nvim-autopairs").setup()
 			end,
 		})
 		use({
 			"p00f/nvim-ts-rainbow",
 		})
-
 		use({
 			"windwp/nvim-ts-autotag",
 			requires = {
 				"nvim-treesitter",
 			},
+		})
+
+		-- STATUS LINE
+		use({
+			"nvim-lualine/lualine.nvim",
+			requires = { "kyazdani42/nvim-web-devicons", opt = true },
+			config = function()
+				require("config.lualine")
+			end,
+		})
+		use({
+			"lukas-reineke/indent-blankline.nvim",
 		})
 		use({
 			"kylechui/nvim-surround",
@@ -84,7 +111,7 @@ return require("packer").startup({
 			end,
 		})
 
-		--- snippets
+		-- SNIPPETS
 		use({ "fivethree-team/vscode-svelte-snippets" })
 		use({
 			"rafamadriz/friendly-snippets",
@@ -102,6 +129,7 @@ return require("packer").startup({
 		use({
 			"hrsh7th/nvim-cmp",
 			requires = {
+				"hrsh7th/cmp-nvim-lua",
 				"hrsh7th/cmp-nvim-lsp",
 				"hrsh7th/cmp-buffer",
 				"hrsh7th/cmp-path",
@@ -109,10 +137,10 @@ return require("packer").startup({
 				"saadparwaiz1/cmp_luasnip",
 				"lukas-reineke/cmp-rg",
 				"hrsh7th/cmp-nvim-lsp-signature-help",
+				"jcha0713/cmp-tw2css",
 			},
-			after = { "LuaSnip" },
 			config = function()
-				require("mycmp.config")
+				require("config.cmp")
 			end,
 		})
 
@@ -121,35 +149,29 @@ return require("packer").startup({
 			config = function()
 				require("Comment").setup({
 					pre_hook = function(ctx)
-						-- Only calculate commentstring for tsx filetypes
-						if vim.bo.filetype == "typescriptreact" then
-							local U = require("Comment.utils")
+						local U = require("Comment.utils")
 
-							-- Detemine whether to use linewise or blockwise commentstring
-							local type = ctx.ctype == U.ctype.line and "__default" or "__multiline"
+						-- Detemine whether to use linewise or blockwise commentstring
+						local type = ctx.ctype == U.ctype.line and "__default" or "__multiline"
 
-							-- Determine the location where to calculate commentstring from
-							local location = nil
-							if ctx.ctype == U.ctype.block then
-								location = require("ts_context_commentstring.utils").get_cursor_location()
-							elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
-								location = require("ts_context_commentstring.utils").get_visual_start_location()
-							end
-
-							return require("ts_context_commentstring.internal").calculate_commentstring({
-								key = type,
-								location = location,
-							})
+						-- Determine the location where to calculate commentstring from
+						local location = nil
+						if ctx.ctype == U.ctype.block then
+							location = require("ts_context_commentstring.utils").get_cursor_location()
+						elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
+							location = require("ts_context_commentstring.utils").get_visual_start_location()
 						end
+
+						return require("ts_context_commentstring.internal").calculate_commentstring({
+							key = type,
+							location = location,
+						})
 					end,
 				})
 			end,
 		})
 		use({
 			"JoosepAlviste/nvim-ts-context-commentstring",
-		})
-		use({
-			"onsails/lspkind-nvim",
 		})
 
 		use({
@@ -208,19 +230,11 @@ return require("packer").startup({
 					diagnostic_message_format = "%m %c",
 					highlight_prefix = false,
 				})
-				vim.api.nvim_create_augroup("lspsaga_filetypes", { clear = true })
-				vim.api.nvim_create_autocmd(
-					"FileType",
-					{ pattern = "LspsagaHover", command = "nnoremap <buffer><nowait><silent> <Esc> <cmd>close!<cr>" }
-				)
-			end,
-		})
-		use("folke/lsp-colors.nvim")
-		use({
-			"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-			disable = true,
-			config = function()
-				require("lsp_lines").setup()
+				vim.api.nvim_create_autocmd("FileType", {
+					group = vim.api.nvim_create_augroup("lspsaga_filetypes", { clear = true }),
+					pattern = "LspsagaHover",
+					command = "nnoremap <buffer><nowait><silent> <Esc> <cmd>close!<cr>",
+				})
 			end,
 		})
 		use({
@@ -284,7 +298,7 @@ return require("packer").startup({
 			"kevinhwang91/nvim-ufo",
 			requires = "kevinhwang91/promise-async",
 			config = function()
-				-- vim.opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+				vim.opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 				-- vim.opt.foldcolumn = "1"
 				vim.opt.foldlevel = 99
 				vim.opt.foldenable = true
@@ -375,7 +389,7 @@ return require("packer").startup({
 					},
 					project_env = {
 						enable = true, -- enable/disable project_env
-						-- config_name = ".__nvim__.lua", -- config file name
+						--[[ config_name = ".__nvim__.lua", -- config file name ]]
 					},
 				})
 			end,
@@ -431,17 +445,18 @@ return require("packer").startup({
 			requires = { { "nvim-lua/plenary.nvim" } },
 			config = function()
 				local opts = { noremap = true }
+				local tb = require("telescope.builtin")
 				vim.keymap.set("n", "<leader>ff", function()
-					require("telescope.builtin").find_files()
+					tb.find_files()
 				end, opts)
 				vim.keymap.set("n", "<leader>fg", function()
-					require("telescope.builtin").live_grep()
+					tb.live_grep()
 				end, opts)
 				vim.keymap.set("n", "<leader>fb", function()
-					require("telescope.builtin").buffers()
+					tb.buffers()
 				end, opts)
 				vim.keymap.set("n", "<leader>fh", function()
-					require("telescope.builtin").help_tags()
+					tb.help_tags()
 				end, opts)
 			end,
 		})
@@ -479,7 +494,7 @@ return require("packer").startup({
 					-- your configuration comes here
 					-- or leave it empty to use the default settings
 					-- refer to the configuration section below
-					triggers = { "<leader>" },
+					triggers = { "<Space>" },
 				})
 			end,
 		})
@@ -522,23 +537,79 @@ return require("packer").startup({
 		use({
 			"RRethy/nvim-treesitter-textsubjects",
 		})
-		-- Sample configuration is supplied
 		use({
-			"lmburns/lf.nvim",
-			config = function()
-				-- This feature will not work if the plugin is lazy-loaded
-				vim.g.lf_netrw = 1
-
-				require("lf").setup({
-					escape_quit = false,
-					border = "rounded",
-					-- highlights = { FloatBorder = { guifg = require("kimbox.palette").colors.magenta } },
-				})
-
-				vim.keymap.set("n", "<leader>o", ":Lf<CR>")
+			"kkoomen/vim-doge",
+			run = ":call doge#install()",
+			setup = function()
+				vim.g.doge_filetype_aliases = {
+					javascript = {
+						"vue",
+						"svelte",
+					},
+				}
 			end,
-			requires = { "plenary.nvim", "akinsho/toggleterm.nvim" },
 		})
+		use({
+			"MunifTanjim/exrc.nvim",
+			config = function()
+				-- disable built-in local config file support
+				vim.o.exrc = false
+
+				require("exrc").setup({
+					files = {
+						".nvimrc.lua",
+						".nvimrc",
+						".exrc.lua",
+						".exrc",
+					},
+				})
+			end,
+		})
+
+		-- DAP
+		use({
+			"mfussenegger/nvim-dap",
+			config = function()
+				local dap = require("dap")
+				dap.adapters.lldb = {
+					type = "executable",
+					command = "/usr/bin/lldb-vscode", -- adjust as needed, must be absolute path
+					name = "lldb",
+				}
+				dap.configurations.cpp = {
+					{
+						name = "Launch",
+						type = "lldb",
+						request = "launch",
+						program = function()
+							return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+						end,
+						cwd = "${workspaceFolder}",
+						stopOnEntry = false,
+						args = {},
+
+						-- 💀
+						-- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+						--
+						--    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+						--
+						-- Otherwise you might get the following error:
+						--
+						--    Error on launch: Failed to attach to the target process
+						--
+						-- But you should be aware of the implications:
+						-- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+						-- runInTerminal = false,
+					},
+				}
+
+				-- If you want to use this for Rust and C, add something like this:
+
+				dap.configurations.c = dap.configurations.cpp
+				dap.configurations.rust = dap.configurations.cpp
+			end,
+		})
+		use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
 	end,
 	config = {
 		display = {

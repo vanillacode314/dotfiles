@@ -1,20 +1,4 @@
-vim.cmd([[
-  colorscheme ayu-dark
-  highlight Normal guibg=None ctermbg=None
-  highlight SignColumn guibg=None ctermbg=None
-  highlight LineNr guibg=None ctermbg=None
-  highlight Comment gui=italic cterm=italic
-  highlight TSProperty gui=italic cterm=italic
-  highlight TSType gui=italic cterm=italic
-  "
-  " " Enable true color 启用终端24位色
-  " if exists('+termguicolors')
-  "   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  "   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  "   set termguicolors
-  " endif
-]])
-
+vim.cmd([[colorscheme vscode]])
 vim.g.mapleader = " "
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.autoread = true
@@ -47,7 +31,7 @@ vim.opt.softtabstop = 2
 vim.opt.cmdheight = 2
 vim.opt.showmode = false
 vim.opt.laststatus = 3
-vim.opt.signcolumn = "number"
+vim.opt.signcolumn = "yes"
 
 -- Folding
 -- vim.opt.foldmethod = "expr"

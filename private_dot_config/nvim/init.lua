@@ -11,8 +11,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
 	})
 end
 
-require("opts")
-require("keymaps")
 require("plugins")
 require("autogroups")
-require("treesitter")
+require("opts")
+require("keymaps")

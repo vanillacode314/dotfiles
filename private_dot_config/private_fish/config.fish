@@ -34,9 +34,9 @@ if status is-interactive
     end
 
     function zl
-        set layout (fd -e yaml '.' "$HOME/.config/zellij/layouts/" -x echo {/.}| fzf)
+        set layout (fd -e yaml '.' "$HOME/.config/tmuxp/" -x echo {/.}| fzf)
         if test -n "$layout"
-            zellij --layout $layout
+            tmuxp load $layout
         end
     end
 
@@ -71,3 +71,8 @@ if status is-interactive
 
     starship init fish | source
 end
+
+# pnpm
+set -gx PNPM_HOME "/home/vc/.local/share/pnpm"
+set -gx PATH "$PNPM_HOME" $PATH
+# pnpm end
