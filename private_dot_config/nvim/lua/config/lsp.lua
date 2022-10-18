@@ -19,13 +19,12 @@ vim.keymap.set("n", "<space>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
 	--[[ require("nvim-navic").attach(client, bufnr) ]]
-	if client.resolved_capabilities.document_formatting then
-		vim.api.nvim_create_augroup("LspFormatting", { clear = true })
+	if client.server_capabilities.documentFormattingProvider then
 		vim.api.nvim_create_autocmd("BufWritePre", {
-			group = "LspFormatting",
+			group = vim.api.nvim_create_augroup("LspFormatting", { clear = true }),
 			buffer = bufnr,
 			callback = function()
-				vim.lsp.buf.formatting_sync()
+				vim.lsp.buf.format()
 			end,
 		})
 	end
@@ -71,7 +70,7 @@ local on_attach = function(client, bufnr)
 	print("LSP attached:", client.name)
 end
 
-local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
@@ -79,7 +78,11 @@ local servers = { "pyright", "rust_analyzer", "volar", "lemminx", "marksman", "a
 
 for _, lsp in pairs(servers) do
 	require("lspconfig")[lsp].setup({
-		on_attach = function(client, bufnr) end,
+		on_attach = function(client, bufnr)
+			client.server_capabilities.documentFormattingProvider = false
+			client.server_capabilities.documentRangeFormattingProvider = false
+			on_attach(client, bufnr)
+		end,
 		capabilities = capabilities,
 		handlers = handlers,
 	})
@@ -87,8 +90,8 @@ end
 
 require("lspconfig").sumneko_lua.setup({
 	on_attach = function(client, bufnr)
-		client.resolved_capabilities.document_formatting = false
-		client.resolved_capabilities.document_range_formatting = false
+		client.server_capabilities.documentFormattingProvider = false
+		client.server_capabilities.documentRangeFormattingProvider = false
 		on_attach(client, bufnr)
 	end,
 	capabilities = capabilities,
@@ -106,8 +109,8 @@ require("lspconfig").sumneko_lua.setup({
 require("lspconfig").svelte.setup({
 	filetypes = { "svelte", "svx" },
 	on_attach = function(client, bufnr)
-		--[[ client.resolved_capabilities.document_formatting = false ]]
-		--[[ client.resolved_capabilities.document_range_formatting = false ]]
+		client.server_capabilities.documentFormattingProvider = false
+		client.server_capabilities.documentRangeFormattingProvider = false
 		on_attach(client, bufnr)
 	end,
 	capabilities = capabilities,
@@ -130,15 +133,6 @@ require("lspconfig").cssls.setup({
 	capabilities = capabilities,
 	handlers = handlers,
 })
--- require("typescript").setup({
--- 	server = {
--- 		on_attach = function(client)
--- 			client.resolved_capabilities.document_formatting = false
--- 			client.resolved_capabilities.document_range_formatting = false
--- 			on_attach(client)
--- 		end,
--- 	},
--- })
 
 local util = require("lspconfig.util")
 local function get_typescript_server_path(root_dir)
@@ -152,6 +146,7 @@ local function get_typescript_server_path(root_dir)
 			return path
 		end
 	end
+
 	if util.search_ancestors(root_dir, check_dir) then
 		return found_ts
 	else
@@ -161,12 +156,12 @@ end
 
 require("lspconfig").volar.setup({
 	on_attach = function(client)
-		client.resolved_capabilities.document_formatting = false
-		client.resolved_capabilities.document_range_formatting = false
+		client.server_capabilities.documentFormattingProvider = false
+		client.server_capabilities.documentRangeFormattingProvider = false
 		on_attach(client)
 	end,
 	filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
-	on_new_config = function(new_config, new_root_dir)
-		new_config.init_options.typescript.serverPath = get_typescript_server_path(new_root_dir)
-	end,
+	--[[ on_new_config = function(new_config, new_root_dir) ]]
+	--[[ 	new_config.init_options.typescript.serverPath = get_typescript_server_path(new_root_dir) ]]
+	--[[ end, ]]
 })

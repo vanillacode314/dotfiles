@@ -1,3 +1,4 @@
-if test -n "$base16_theme" && status --is-interactive
-  base16-$base16_theme
+if test -n "$base16_fish_theme" && status --is-interactive
+    base16-$base16_fish_theme
 end
+
