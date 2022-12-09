@@ -23,6 +23,18 @@ cmp.setup({
 			return lspkind.cmp_format({ mode = "symbol", maxwidth = 50 })(entry, vim_item)
 		end,
 	},
+	sorting = {
+		comparators = {
+			cmp.config.compare.offset,
+			cmp.config.compare.exact,
+			cmp.config.compare.score,
+			require("cmp-under-comparator").under,
+			cmp.config.compare.kind,
+			cmp.config.compare.sort_text,
+			cmp.config.compare.length,
+			cmp.config.compare.order,
+		},
+	},
 	snippet = {
 		expand = function(args)
 			require("luasnip").lsp_expand(args.body)
@@ -64,11 +76,11 @@ cmp.setup({
 		entries = { name = "custom", selection_order = "near_cursor" },
 	},
 	sources = cmp.config.sources({
-		{ name = "nvim_lua" },
 		{ name = "nvim_lsp" },
-		{ name = "cmp-tw2css" },
+		{ name = "nvim_lua" },
 		{ name = "nvim_lsp_signature_help" },
 		{ name = "luasnip" },
+		{ name = "cmp-tw2css" },
 		{ name = "path" },
 		{ name = "rg", keyword_length = 3 },
 	}, {}),

@@ -1,4 +1,4 @@
-vim.cmd([[colorscheme vscode]])
+vim.cmd([[colorscheme base16-gruvbox-dark-hard]])
 vim.g.mapleader = " "
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.autoread = true

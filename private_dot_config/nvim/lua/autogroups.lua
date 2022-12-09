@@ -11,32 +11,22 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "plugins.lua",
 	command = "PackerCompile",
 })
-vim.api.nvim_create_autocmd("BufRead,BufNewFile", {
-	group = "mygroup",
-	pattern = "*.svx",
-	command = "setfiletype markdown",
-})
-vim.api.nvim_create_autocmd("BufRead,BufNewFile", {
-	group = "mygroup",
-	pattern = "*.astro",
-	command = "setfiletype astro",
-})
-vim.api.nvim_create_autocmd("BufRead,BufNewFile", {
-	group = "mygroup",
-	pattern = "*.postcss",
-	command = "setfiletype css",
-})
 
 vim.api.nvim_create_autocmd("ColorScheme", {
 	group = vim.api.nvim_create_augroup("HighlightChanges", { clear = true }),
 	callback = function()
 		vim.cmd([[
 			highlight Normal guibg=None ctermbg=None
+			highlight FloatNormal guibg=None ctermbg=None
 			highlight SignColumn guibg=None ctermbg=None
 			highlight LineNr guibg=None ctermbg=None
-			highlight Comment gui=italic cterm=italic
-			highlight TSProperty gui=italic cterm=italic
-			highlight TSType gui=italic cterm=italic
+			highlight Comment gui=italic cterm=italic 
+			highlight Identifier gui=italic cterm=italic 
+			highlight TSIdentifier gui=italic cterm=italic 
+			highlight TSProperty gui=italic cterm=italic 
+			highlight TSAttribute gui=italic cterm=italic 
+			highlight Type gui=italic cterm=italic 
+			highlight TSType gui=italic cterm=italic 
 			" gray
 			highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080
 			" blue

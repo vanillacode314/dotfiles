@@ -14,7 +14,6 @@ require("null-ls").setup({
 				"typescript",
 				"typescriptreact",
 				"vue",
-				--[[ "svelte", ]]
 				"css",
 				"scss",
 				"less",
@@ -25,36 +24,18 @@ require("null-ls").setup({
 				"graphql",
 			},
 		}),
-
-		-- null_ls.builtins.diagnostics.eslint.with({
-		-- 	filetypes = {
-		-- 		"javascript",
-		-- 		"javascriptreact",
-		-- 		"typescript",
-		-- 		"typescriptreact",
-		-- 		"vue",
-		-- 		"css",
-		-- 		"scss",
-		-- 		"less",
-		-- 		"svelte",
-		-- 		"html",
-		-- 		"json",
-		-- 		"yaml",
-		-- 		"markdown",
-		-- 		"graphql",
-		-- 	},
-		-- }),
 		-- null_ls.builtins.completion.spell,
 	},
 
 	on_attach = function(client)
 		if client.server_capabilities.documentFormattingProvider then
-			vim.cmd([[
-				augroup LspFormatting
-						autocmd! * <buffer>
-						autocmd BufWritePre <buffer> lua vim.lsp.buf.format()
-				augroup END
-				]])
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = vim.api.nvim_create_augroup("LspFormatting", { clear = true }),
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.format()
+				end,
+			})
 		end
 	end,
 })
